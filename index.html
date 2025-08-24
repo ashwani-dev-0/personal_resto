@@ -2,952 +2,168 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ashwani's Resto — Taste the Magic</title>
-  <meta name="description" content="Ashwani's Resto — A colorful, animated, responsive single-file restaurant website with filters, cart, reservation, gallery, reviews, FAQ and more." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ashwani Resto</title>
   <style>
-    /* ==========================================================
-       ASHWANI'S RESTO — SINGLE FILE WEBSITE
-       Tech: HTML + CSS + JS (No frameworks)
-       Features: Sticky nav, mobile menu, hero slider, badges,
-       menu filters + search + sorting, add-to-cart w/ localStorage,
-       cart drawer + checkout modal, reservation form w/ validation,
-       gallery + lightbox, testimonials slider, FAQ accordion,
-       contact form (demo), newsletter, theme switch, back-to-top,
-       small toast system, simple scroll animations.
-       ---------------------------------------------------------- */
+    /* RESET */
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{background:#f9f9f9;color:#333;overflow-x:hidden;}
+    a{text-decoration:none;color:inherit;}
 
-    :root{
-      --bg:#0f0f10;           /* body background for dark mode */
-      --card:#151518;         /* card background */
-      --soft:#1c1c21;         /* softer containers */
-      --text:#e7e7ea;         /* primary text */
-      --muted:#bcbcc6;        /* muted text  */
-      --accent:#ff4d6d;       /* primary accent */
-      --accent-2:#ffb703;     /* secondary accent */
-      --green:#22c55e;        /* success */
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-      --radius:18px;
-      --radius-sm:12px;
-      --radius-lg:28px;
-      --glass:rgba(255,255,255,.06);
-      --gradient:linear-gradient(135deg, #ff4d6d 0%, #ff8fa3 35%, #ffc8dd 70%, #bde0fe 100%);
-      --gradient-2:linear-gradient(135deg,#ffb703,#ffd166);
-      --maxw:1200px;
-      --nav-h:78px;
-    }
+    /* NAVBAR */
+    nav{position:fixed;top:0;left:0;width:100%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.1);
+        display:flex;justify-content:space-between;align-items:center;padding:15px 8%;z-index:1000;
+        transition:all 0.4s ease;}
+    nav.scrolled{background:#ff6b6b;color:#fff;}
+    nav h1{font-size:22px;font-weight:700;color:#ff6b6b;transition:0.3s;}
+    nav ul{list-style:none;display:flex;gap:20px;}
+    nav ul li a{font-weight:500;position:relative;}
+    nav ul li a::after{content:"";position:absolute;bottom:-4px;left:0;width:0;height:2px;background:#ff6b6b;transition:0.3s;}
+    nav ul li a:hover::after{width:100%;}
 
-    /* Light theme variables (auto-switched) */
-    body.light{
-      --bg:#f8f8fb;
-      --card:#ffffff;
-      --soft:#f1f2f6;
-      --text:#121217;
-      --muted:#5c5d6a;
-      --shadow:0 10px 25px rgba(0,0,0,.08);
-      --glass:rgba(0,0,0,.05);
-    }
+    /* HERO */
+    header{height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;
+        background:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)),url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1600&q=80') no-repeat center/cover;
+        color:#fff;text-align:center;animation:fadeIn 2s ease;}
+    header h2{font-size:50px;margin-bottom:10px;animation:slideUp 1s ease forwards;}
+    header p{font-size:20px;animation:slideUp 1.5s ease forwards;}
 
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0; font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto;
-      background:var(--bg); color:var(--text); line-height:1.6;
-    }
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
 
-    /* Utility */
-    .container{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:24px}
-    .btn{display:inline-flex;gap:8px;align-items:center;justify-content:center;padding:12px 18px;border-radius:999px;border:0;font-weight:700;cursor:pointer;transition:.25s;box-shadow:var(--shadow)}
-    .btn.accent{background:var(--accent);color:#fff}
-    .btn.ghost{background:transparent;color:var(--text);border:2px solid var(--accent)}
-    .btn.soft{background:var(--soft)}
-    .tag{padding:4px 10px;border-radius:999px;background:var(--glass);backdrop-filter:blur(6px);font-size:12px;display:inline-flex;gap:6px;align-items:center}
-    .pill{padding:10px 16px;border-radius:999px;background:var(--soft);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
-    .hide{display:none!important}
+    /* MENU */
+    section{padding:60px 8%;}
+    section h2{text-align:center;font-size:32px;margin-bottom:30px;color:#ff6b6b;position:relative;}
+    section h2::after{content:"";width:60px;height:3px;background:#ff6b6b;display:block;margin:10px auto;}
 
-    /* ================= NAVBAR ================= */
-    .nav{position:sticky;top:0;z-index:90;background:rgba(10,10,11,.55);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
-    body.light .nav{background:rgba(255,255,255,.7)}
-    .nav .row{height:var(--nav-h);display:flex;align-items:center;justify-content:space-between}
-    .brand{display:flex;align-items:center;gap:12px;font-weight:800}
-    .brand i{display:grid;place-items:center;background:var(--gradient);color:#111;width:38px;height:38px;border-radius:12px}
-    .nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0}
-    .nav a{color:var(--text);text-decoration:none;font-weight:600;opacity:.85}
-    .nav a:hover{opacity:1}
-    .nav .cta{display:flex;gap:10px;align-items:center}
-    .hamburger{display:none;font-size:28px;cursor:pointer}
+    .menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:25px;}
+    .card{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,0.1);transition:0.3s;cursor:pointer;}
+    .card:hover{transform:translateY(-8px);}
+    .card img{width:100%;height:180px;object-fit:cover;transition:0.5s;}
+    .card:hover img{transform:scale(1.1);}
+    .card-body{padding:15px;}
+    .card-body h3{font-size:20px;margin-bottom:8px;}
+    .card-body p{font-size:14px;color:#555;margin-bottom:10px;}
+    .card-body span{color:#ff6b6b;font-weight:600;}
+    .btn{display:inline-block;padding:8px 16px;border:none;background:#ff6b6b;color:#fff;border-radius:25px;cursor:pointer;transition:0.3s;}
+    .btn:hover{background:#ff4040;}
 
-    /* Mobile menu */
-    .mobile-menu{position:fixed;inset:0 0 auto 0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);display:none;z-index:85}
-    .mobile-sheet{position:absolute;right:0;top:0;height:100%;width:min(85%,360px);background:var(--card);padding:22px;border-top-left-radius:18px;border-bottom-left-radius:18px;box-shadow:var(--shadow)}
-    .mobile-sheet a{display:block;padding:14px;border-radius:10px;color:var(--text);text-decoration:none}
-    .mobile-sheet a:hover{background:var(--soft)}
+    /* CART */
+    #cartDrawer{position:fixed;top:0;right:-350px;width:350px;height:100%;background:#fff;box-shadow:-2px 0 15px rgba(0,0,0,0.1);
+        transition:0.5s;padding:20px;z-index:2000;display:flex;flex-direction:column;}
+    #cartDrawer.active{right:0;}
+    #cartItems{flex:1;overflow-y:auto;margin:15px 0;}
+    #cartDrawer h3{color:#ff6b6b;margin-bottom:10px;}
+    .cart-item{display:flex;justify-content:space-between;align-items:center;margin:10px 0;}
+    .cart-item span{font-size:14px;}
+    .closeCart{cursor:pointer;font-size:20px;color:#ff6b6b;}
 
-    /* ================= HERO ================= */
-    .hero{position:relative;padding:36px 0 60px;overflow:hidden}
-    .hero .grid{display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:40px}
-    .headline{font-size:clamp(32px,5vw,58px);font-weight:800;line-height:1.1}
-    .headline .highlight{background:var(--gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
-    .sub{color:var(--muted)}
-    .hero-badges{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 24px}
-    .hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+    /* TOAST */
+    .toast{position:fixed;bottom:20px;right:20px;background:#333;color:#fff;padding:12px 18px;border-radius:8px;
+        animation:fadeInOut 3s forwards;z-index:3000;}
+    @keyframes fadeInOut{0%{opacity:0;transform:translateY(20px);}10%,90%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(20px);}}
 
-    /* Hero slider */
-    .slider{position:relative;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
-    .slides{display:flex;transition:transform .6s ease}
-    .slide{min-width:100%;height:420px;background:#000;position:relative}
-    .slide img{width:100%;height:100%;object-fit:cover;opacity:.9}
-    .slide .cap{position:absolute;bottom:14px;left:14px;background:rgba(0,0,0,.45);padding:10px 14px;border-radius:12px;color:#fff;backdrop-filter:blur(4px)}
-    .slider .ctrl{position:absolute;inset:auto 10px 10px auto;display:flex;gap:8px}
-    .ctrl button{width:38px;height:38px;border-radius:12px;border:0;background:rgba(255,255,255,.8);cursor:pointer}
-
-    /* Counters */
-    .counters{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}
-    .counter{background:var(--card);border-radius:var(--radius);padding:18px;text-align:center;box-shadow:var(--shadow)}
-    .counter h3{margin:0;font-size:28px}
-    .counter p{margin:6px 0 0;color:var(--muted)}
-
-    /* ================= MENU ================= */
-    section{padding:70px 0}
-    .section-title{display:flex;align-items:end;justify-content:space-between;margin-bottom:20px}
-    .section-title h2{margin:0;font-size:34px}
-    .filters{display:flex;flex-wrap:wrap;gap:10px}
-
-    .menu-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
-    .card{grid-column:span 4;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
-    .card .img{position:relative;height:180px;overflow:hidden}
-    .card .img img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
-    .card:hover .img img{transform:scale(1.06)}
-    .badge{position:absolute;top:12px;left:12px}
-    .card .body{padding:14px 16px;display:grid;gap:8px}
-    .card .title{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .price{color:var(--accent);font-weight:800}
-    .tags{display:flex;gap:8px;flex-wrap:wrap}
-    .actions{display:flex;align-items:center;gap:10px;margin-top:6px}
-
-    /* Search + sort bar */
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 24px}
-    .toolbar input,.toolbar select{background:var(--soft);border:0;padding:12px 14px;border-radius:14px;color:var(--text)}
-
-    /* ================= CART ================= */
-    .cart-btn{position:relative}
-    .cart-btn .count{position:absolute;top:-6px;right:-6px;background:var(--accent);color:#fff;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px}
-
-    .cart-drawer{position:fixed;inset:0 0 0 auto;background:rgba(0,0,0,.5);display:none;z-index:100}
-    .cart-panel{position:absolute;right:0;top:0;height:100%;width:min(90%,420px);background:var(--card);box-shadow:var(--shadow);display:flex;flex-direction:column}
-    .cart-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid rgba(255,255,255,.06)}
-    .cart-list{flex:1;overflow:auto;padding:12px}
-    .cart-item{display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:10px;background:var(--soft);border-radius:12px;margin-bottom:10px;padding:8px}
-    .cart-item img{width:60px;height:60px;object-fit:cover;border-radius:10px}
-    .qty{display:flex;align-items:center;gap:6px}
-    .qty button{width:28px;height:28px;border-radius:8px;border:0;background:var(--card);cursor:pointer}
-    .cart-footer{padding:16px;border-top:1px solid rgba(255,255,255,.06);display:grid;gap:10px}
-    .total{display:flex;align-items:center;justify-content:space-between}
-
-    /* ================= RESERVATION + MODALS ================= */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:110}
-    .modal .box{background:var(--card);width:min(95%,640px);border-radius:18px;box-shadow:var(--shadow);padding:18px}
-    .box h3{margin:8px 0 14px}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .box input,.box select,.box textarea{width:100%;background:var(--soft);border:0;border-radius:12px;padding:12px;color:var(--text)}
-
-    /* ================= GALLERY ================= */
-    .gallery{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
-    .g-img{grid-column:span 4;border-radius:16px;overflow:hidden;cursor:pointer;box-shadow:var(--shadow)}
-    .g-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
-    .g-img:hover img{transform:scale(1.05)}
-
-    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:120}
-    .lightbox img{max-width:92vw;max-height:85vh;border-radius:16px}
-
-    /* ================= TESTIMONIALS ================= */
-    .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .review{background:var(--card);padding:16px;border-radius:18px;box-shadow:var(--shadow)}
-
-    /* ================= FAQ ================= */
-    .faq .item{background:var(--card);border-radius:16px;margin-bottom:10px;overflow:hidden}
-    .faq .q{padding:16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
-    .faq .a{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 16px;color:var(--muted)}
-    .faq .item.active .a{max-height:200px;padding:0 16px 16px}
-
-    /* ================= CONTACT ================= */
-    .contact-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
-    .contact form{background:var(--card);padding:16px;border-radius:18px}
-    .contact input,.contact textarea{width:100%;background:var(--soft);border:0;padding:12px;border-radius:12px;color:var(--text)}
-
-    /* ================= FOOTER ================= */
-    footer{background:var(--soft);padding:34px 0;margin-top:40px}
-
-    /* ================= TOAST ================= */
-    .toast-wrap{position:fixed;right:14px;bottom:14px;display:grid;gap:10px;z-index:140}
-    .toast{background:var(--card);border-left:6px solid var(--accent);padding:12px 14px;border-radius:12px;box-shadow:var(--shadow)}
-
-    /* ================= BACK TO TOP ================= */
-    .top{position:fixed;right:16px;bottom:80px;width:42px;height:42px;border-radius:12px;display:none;align-items:center;justify-content:center;background:var(--accent);color:#fff;cursor:pointer;z-index:70}
-
-    /* ================= MEDIA QUERIES ================= */
-    @media (max-width:1000px){
-      .hero .grid{grid-template-columns:1fr}
-      .counters{grid-template-columns:repeat(3,1fr)}
-      .testimonials{grid-template-columns:1fr 1fr}
-      .contact-grid{grid-template-columns:1fr}
-    }
-    @media (max-width:780px){
-      .hamburger{display:block}
-      .nav .links{display:none}
-      .card{grid-column:span 6}
-      .g-img{grid-column:span 6}
-      .testimonials{grid-template-columns:1fr}
-      .counters{grid-template-columns:1fr 1fr 1fr}
-    }
-    @media (max-width:520px){
-      .card{grid-column:span 12}
-      .g-img{grid-column:span 12}
-      .counter{padding:14px}
+    /* RESPONSIVE */
+    @media(max-width:768px){
+      nav ul{display:none;}
     }
   </style>
 </head>
-<body class="light">
-  <!-- ================= NAVBAR ================= -->
-  <nav class="nav">
-    <div class="container row">
-      <div class="brand">
-        <i class='bx bxs-bowl-hot'></i>
-        <span>Ashwani's Resto</span>
-        <span class="tag" style="margin-left:8px"><i class='bx bx-star'></i> New!</span>
-      </div>
-      <ul class="links">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#menu">Menu</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#reviews">Reviews</a></li>
-        <li><a href="#faq">FAQ</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-      <div class="cta">
-        <button class="btn soft" id="themeToggle" title="Toggle theme"><i class='bx bx-moon'></i></button>
-        <button class="btn soft cart-btn" id="openCart"><i class='bx bx-cart'></i><span class="count" id="cartCount">0</span></button>
-        <button class="btn accent" id="openReserve"><i class='bx bx-calendar'></i> Reserve</button>
-        <div class="hamburger" id="openMobile"><i class='bx bx-menu'></i></div>
-      </div>
-    </div>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <h1>AshwaniResto</h1>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#" onclick="toggleCart()">Cart</a></li>
+    </ul>
   </nav>
 
-  <!-- MOBILE MENU -->
-  <div class="mobile-menu" id="mobileMenu">
-    <div class="mobile-sheet">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px">
-        <div class="brand"><i class='bx bxs-bowl-hot'></i><b>Ashwani's</b></div>
-        <button class="btn soft" id="closeMobile"><i class='bx bx-x'></i></button>
-      </div>
-      <a href="#home" class="m-link">Home</a>
-      <a href="#menu" class="m-link">Menu</a>
-      <a href="#gallery" class="m-link">Gallery</a>
-      <a href="#reviews" class="m-link">Reviews</a>
-      <a href="#faq" class="m-link">FAQ</a>
-      <a href="#contact" class="m-link">Contact</a>
-      <hr style="border-color:transparent;height:1px;background:rgba(255,255,255,.08);margin:12px 0">
-      <button class="btn accent" style="width:100%" id="mReserve"><i class='bx bx-calendar'></i> Reserve a Table</button>
-    </div>
-  </div>
-
-  <!-- ================= HERO ================= -->
-  <header id="home" class="hero">
-    <div class="container grid">
-      <div>
-        <div class="tag"><i class='bx bx-bolt'></i> Grand Opening Offer • 20% OFF this week</div>
-        <h1 class="headline">Taste the <span class="highlight">Magic</span> at <span class="highlight">Ashwani's</span></h1>
-        <p class="sub">Handcrafted flavors • Seasonal ingredients • Street-style vibes. Bringing joy on every plate with a modern twist.</p>
-        <div class="hero-cta">
-          <a href="#menu" class="btn accent"><i class='bx bx-restaurant'></i> Explore Menu</a>
-          <button class="btn ghost" id="heroReserve"><i class='bx bx-calendar'></i> Reserve Table</button>
-          <button class="btn soft" id="subscribeBtn"><i class='bx bx-bell'></i> Get Updates</button>
-        </div>
-        <div class="counters">
-          <div class="counter"><h3 id="c1">0</h3><p>Happy Guests</p></div>
-          <div class="counter"><h3 id="c2">0</h3><p>Signature Dishes</p></div>
-          <div class="counter"><h3 id="c3">0</h3><p>5★ Reviews</p></div>
-        </div>
-      </div>
-
-      <!-- slider -->
-      <div class="slider" aria-label="Food images slider">
-        <div class="slides" id="slides">
-          <div class="slide"><img src="https://images.unsplash.com/photo-1606755962773-d324d20ad92a?q=80&w=1600&auto=format&fit=crop" alt="Burger & fries"><div class="cap tag"><i class='bx bx-camera'></i> Signature Burger</div></div>
-          <div class="slide"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600&auto=format&fit=crop" alt="Pasta"><div class="cap tag"><i class='bx bx-camera'></i> Creamy Alfredo</div></div>
-          <div class="slide"><img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop" alt="Biryani"><div class="cap tag"><i class='bx bx-camera'></i> Royal Biryani</div></div>
-          <div class="slide"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1600&auto=format&fit=crop" alt="Pizza"><div class="cap tag"><i class='bx bx-camera'></i> Woodfired Pizza</div></div>
-        </div>
-        <div class="ctrl">
-          <button id="prev"><i class='bx bx-chevron-left'></i></button>
-          <button id="next"><i class='bx bx-chevron-right'></i></button>
-        </div>
-      </div>
-    </div>
+  <!-- HERO -->
+  <header>
+    <h2>Welcome to Ashwani Resto</h2>
+    <p>Taste the best dishes in town with love ❤️</p>
   </header>
 
-  <!-- ================= MENU ================= -->
-  <section id="menu" class="menu">
-    <div class="container">
-      <div class="section-title">
-        <h2>Our Menu</h2>
-        <div class="filters" id="categoryPills">
-          <span class="pill" data-cat="all"><i class='bx bx-category'></i> All</span>
-          <span class="pill" data-cat="veg"><i class='bx bx-leaf'></i> Veg</span>
-          <span class="pill" data-cat="nonveg"><i class='bx bx-bone'></i> Non‑Veg</span>
-          <span class="pill" data-cat="dessert"><i class='bx bx-cookie'></i> Dessert</span>
-          <span class="pill" data-cat="drinks"><i class='bx bx-drink'></i> Drinks</span>
-          <span class="pill" data-cat="special"><i class='bx bx-star'></i> Specials</span>
-        </div>
-      </div>
-
-      <div class="toolbar">
-        <input type="search" id="search" placeholder="Search dish… (ex: biryani, pizza)" />
-        <select id="sort">
-          <option value="pop">Sort by Popular</option>
-          <option value="lh">Price: Low → High</option>
-          <option value="hl">Price: High → Low</option>
-          <option value="az">A → Z</option>
-          <option value="za">Z → A</option>
-        </select>
-      </div>
-
-      <div class="menu-grid" id="menuGrid"><!-- Cards injected by JS --></div>
-      <div style="text-align:center;margin-top:16px">
-        <button class="btn soft" id="loadMore"><i class='bx bx-plus'></i> Load more</button>
-      </div>
-    </div>
+  <!-- MENU -->
+  <section id="menu">
+    <h2>Our Menu</h2>
+    <div class="menu" id="menuContainer"></div>
   </section>
 
-  <!-- ================= GALLERY ================= -->
-  <section id="gallery">
-    <div class="container">
-      <div class="section-title">
-        <h2>Vibe Gallery</h2>
-        <span class="tag"><i class='bx bx-camera'></i> Tap to view</span>
-      </div>
-      <div class="gallery" id="galleryGrid">
-        <!-- images -->
-        <div class="g-img"><img src="https://images.unsplash.com/photo-1533777324565-a040eb52fac1?q=80&w=1600&auto=format&fit=crop" alt="Ambience"></div>
-        <div class="g-img"><img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=1600&auto=format&fit=crop" alt="Seating"></div>
-        <div class="g-img"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600&auto=format&fit=crop" alt="Cuisine"></div>
-        <div class="g-img"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1600&auto=format&fit=crop" alt="Pizza"></div>
-        <div class="g-img"><img src="https://images.unsplash.com/photo-1498654896293-37aacf113fd9?q=80&w=1600&auto=format&fit=crop" alt="Dessert"></div>
-        <div class="g-img"><img src="https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=1600&auto=format&fit=crop" alt="Drinks"></div>
-      </div>
+  <!-- CART DRAWER -->
+  <div id="cartDrawer">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Your Cart</h3>
+      <span class="closeCart" onclick="toggleCart()">✖</span>
     </div>
-  </section>
-
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox"><img alt="preview" src="" /></div>
-
-  <!-- ================= TESTIMONIALS ================= -->
-  <section id="reviews">
-    <div class="container">
-      <div class="section-title">
-        <h2>What People Say</h2>
-        <span class="tag"><i class='bx bx-happy'></i> Real guests • Real love</span>
-      </div>
-      <div class="testimonials" id="testimonials">
-        <div class="review">
-          <div class="tag"><i class='bx bxs-star'></i> 5.0</div>
-          <h3>“Insane flavors! The biryani slapped.”</h3>
-          <p class="sub">— Ananya, Food Blogger</p>
-        </div>
-        <div class="review">
-          <div class="tag"><i class='bx bxs-star'></i> 4.9</div>
-          <h3>“Ambience + staff = 10/10. Must try pizza.”</h3>
-          <p class="sub">— Rahul, Local Guide</p>
-        </div>
-        <div class="review">
-          <div class="tag"><i class='bx bxs-star'></i> 5.0</div>
-          <h3>“Desserts are criminally good. I'm hooked.”</h3>
-          <p class="sub">— Meera, Student</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= FAQ ================= -->
-  <section id="faq" class="faq">
-    <div class="container">
-      <div class="section-title"><h2>FAQ</h2></div>
-      <div class="item">
-        <div class="q">Do you take walk‑ins? <i class='bx bx-plus'></i></div>
-        <div class="a">Yes! But we recommend reservations for weekends and holidays to avoid waiting.</div>
-      </div>
-      <div class="item">
-        <div class="q">Is there parking available? <i class='bx bx-plus'></i></div>
-        <div class="a">Free parking for guests across the street. Valet available after 6 PM.</div>
-      </div>
-      <div class="item">
-        <div class="q">Do you have vegan / gluten‑free options? <i class='bx bx-plus'></i></div>
-        <div class="a">We offer multiple vegan, Jain, and GF options. Ask our staff — we love to customize!</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= CONTACT ================= -->
-  <section id="contact" class="contact">
-    <div class="container">
-      <div class="section-title">
-        <h2>Reach Us</h2>
-        <span class="tag"><i class='bx bx-map'></i> Lucknow • India</span>
-      </div>
-      <div class="contact-grid">
-        <form id="contactForm">
-          <div class="grid-2">
-            <div><label>Name</label><input required name="name" placeholder="Your name"/></div>
-            <div><label>Phone</label><input required name="phone" placeholder="Your phone"/></div>
-          </div>
-          <div class="grid-2" style="margin-top:10px">
-            <div><label>Email</label><input type="email" name="email" placeholder="Email (optional)"/></div>
-            <div><label>Subject</label><input name="subject" placeholder="Subject"/></div>
-          </div>
-          <div style="margin-top:10px"><label>Message</label><textarea name="msg" rows="4" placeholder="How can we help?"></textarea></div>
-          <div style="display:flex;gap:10px;align-items:center;margin-top:12px">
-            <button class="btn accent" type="submit"><i class='bx bx-send'></i> Send Message</button>
-            <span class="tag"><i class='bx bx-time-five'></i> We'll reply within 24 hrs</span>
-          </div>
-        </form>
-        <div>
-          <div class="card" style="grid-column:span 12">
-            <div class="img" style="height:220px">
-              <img src="https://images.unsplash.com/photo-1499155286265-79a9dc9c6380?q=80&w=1600&auto=format&fit=crop" alt="Map placeholder"/>
-              <span class="badge tag"><i class='bx bx-map-pin'></i> Find us in Gomti Nagar</span>
-            </div>
-            <div class="body">
-              <div class="title"><h3>Hours</h3><span class="tag"><i class='bx bx-time'></i> Open Daily</span></div>
-              <p>Mon–Thu: 11:00–22:00 • Fri–Sun: 11:00–23:30</p>
-              <div class="title" style="margin-top:6px"><h3>Call</h3><a href="tel:+918957006202" class="tag"><i class='bx bx-phone'></i> +91 89570 06202</a></div>
-              <div class="title" style="margin-top:6px"><h3>Mail</h3><a href="mailto:ashwanisingh91541@gmail.com" class="tag"><i class='bx bx-envelope'></i> ashwanisingh91541@gmail.com</a></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= FOOTER ================= -->
-  <footer>
-    <div class="container" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between">
-      <div class="brand"><i class='bx bxs-bowl-hot'></i><b>Ashwani's Resto</b></div>
-      <form id="newsletter" style="display:flex;gap:8px">
-        <input placeholder="Enter email for offers" type="email" required style="background:var(--card);border:0;border-radius:999px;padding:12px 14px;color:var(--text);min-width:240px"/>
-        <button class="btn accent" type="submit"><i class='bx bx-mail-send'></i> Subscribe</button>
-      </form>
-      <div style="display:flex;gap:10px">
-        <a class="tag" href="#"><i class='bx bxl-instagram'></i> Instagram</a>
-        <a class="tag" href="#"><i class='bx bxl-facebook'></i> Facebook</a>
-        <a class="tag" href="#"><i class='bx bxl-github'></i> GitHub</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- ================= CART DRAWER ================= -->
-  <div class="cart-drawer" id="cartDrawer">
-    <div class="cart-panel">
-      <div class="cart-header">
-        <div style="display:flex;align-items:center;gap:10px"><i class='bx bx-cart'></i><b>Your Cart</b></div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn soft" id="clearCart"><i class='bx bx-trash'></i></button>
-          <button class="btn soft" id="closeCart"><i class='bx bx-x'></i></button>
-        </div>
-      </div>
-      <div class="cart-list" id="cartList"></div>
-      <div class="cart-footer">
-        <div class="total"><b>Total</b><b id="grandTotal">₹0</b></div>
-        <button class="btn accent" id="checkoutBtn"><i class='bx bx-credit-card'></i> Checkout</button>
-      </div>
-    </div>
+    <div id="cartItems"></div>
+    <h4>Total: <span id="cartTotal">₹0</span></h4>
+    <button class="btn" onclick="checkout()">Checkout</button>
   </div>
-
-  <!-- ================= RESERVATION MODAL ================= -->
-  <div class="modal" id="reserveModal">
-    <div class="box">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <h3><i class='bx bx-calendar'></i> Reserve a Table</h3>
-        <button class="btn soft" id="reserveClose"><i class='bx bx-x'></i></button>
-      </div>
-      <form id="reserveForm">
-        <div class="grid-2">
-          <div>
-            <label>Full Name</label>
-            <input required name="name" placeholder="Your name" />
-          </div>
-          <div>
-            <label>Phone</label>
-            <input required name="phone" placeholder="Phone number" />
-          </div>
-        </div>
-        <div class="grid-2" style="margin-top:10px">
-          <div>
-            <label>Date</label>
-            <input required type="date" name="date" />
-          </div>
-          <div>
-            <label>Time</label>
-            <input required type="time" name="time" />
-          </div>
-        </div>
-        <div class="grid-2" style="margin-top:10px">
-          <div>
-            <label>Guests</label>
-            <select name="guests" required>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4" selected>4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7+">7+</option>
-            </select>
-          </div>
-          <div>
-            <label>Occasion</label>
-            <select name="occasion">
-              <option>Casual</option>
-              <option>Birthday</option>
-              <option>Anniversary</option>
-              <option>Business</option>
-            </select>
-          </div>
-        </div>
-        <div style="margin-top:10px">
-          <label>Note</label>
-          <textarea name="note" rows="3" placeholder="Any special requests?"></textarea>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
-          <button class="btn accent" type="submit"><i class='bx bx-check-circle'></i> Confirm Reservation</button>
-          <span class="tag"><i class='bx bx-lock-alt'></i> We’ll text a confirmation</span>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= CHECKOUT MODAL ================= -->
-  <div class="modal" id="checkoutModal">
-    <div class="box">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <h3><i class='bx bx-credit-card'></i> Checkout</h3>
-        <button class="btn soft" id="checkoutClose"><i class='bx bx-x'></i></button>
-      </div>
-      <form id="checkoutForm">
-        <div class="grid-2">
-          <div><label>Name</label><input required name="name" placeholder="Your name"></div>
-          <div><label>Phone</label><input required name="phone" placeholder="Phone"></div>
-        </div>
-        <div class="grid-2" style="margin-top:10px">
-          <div><label>Address</label><input required name="address" placeholder="Delivery address"></div>
-          <div><label>Payment</label>
-            <select name="payment">
-              <option>Cash on Delivery</option>
-              <option>UPI</option>
-              <option>Card</option>
-            </select>
-          </div>
-        </div>
-        <div style="margin-top:10px"><label>Note</label><textarea name="note" rows="3" placeholder="Landmark / instructions"></textarea></div>
-        <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
-          <button class="btn accent" type="submit"><i class='bx bx-check'></i> Place Order</button>
-          <span class="tag"><i class='bx bx-shield-quarter'></i> Demo only — no real charge</span>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= TOASTS + BACK TO TOP ================= -->
-  <div class="toast-wrap" id="toasts"></div>
-  <button class="top" id="backTop"><i class='bx bx-up-arrow-alt'></i></button>
 
   <script>
-  // ============================================================
-  // JS — Ashwani's Resto
-  // ============================================================
+    // MENU ITEMS
+    const menuItems=[
+      {id:1,name:"Paneer Tikka",desc:"Spicy grilled paneer with chutney",price:220,img:"https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?auto=format&fit=crop&w=800&q=80"},
+      {id:2,name:"Veg Biryani",desc:"Aromatic basmati with veggies",price:180,img:"https://images.unsplash.com/photo-1631515243349-3883a74fdb73?auto=format&fit=crop&w=800&q=80"},
+      {id:3,name:"Butter Chicken",desc:"Creamy tomato chicken curry",price:320,img:"https://images.unsplash.com/photo-1625941362836-bc5bd1ea15a2?auto=format&fit=crop&w=800&q=80"},
+      {id:4,name:"Pasta Alfredo",desc:"White sauce pasta with herbs",price:250,img:"https://images.unsplash.com/photo-1617196039897-fd8cb67f57a1?auto=format&fit=crop&w=800&q=80"}
+    ];
 
-  // ---------- Helpers ----------
-  // ============================================================
-// JS — Ashwani's Resto (single-file site)
-// Paste inside your <script> tag
-// ============================================================
-
-// ---------- Helpers ----------
-const qs  = (s, p=document) => p.querySelector(s);
-const qsa = (s, p=document) => [...p.querySelectorAll(s)];
-const fmt = (n) => `₹${Number(n||0).toLocaleString('en-IN')}`;
-const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
-
-// Toast system
-const toastWrap = qs('#toasts');
-function toast(msg, type='info', timeout=2600){
-  const el = document.createElement('div');
-  el.className = 'toast';
-  el.style.borderLeftColor =
-    type==='ok'   ? 'var(--green)' :
-    type==='warn' ? 'var(--accent-2)' :
-                    'var(--accent)';
-  el.innerHTML = msg;
-  toastWrap.appendChild(el);
-  setTimeout(()=>{ el.style.opacity=.0; el.style.transform='translateY(6px)'; }, timeout);
-  setTimeout(()=> el.remove(), timeout+420);
-}
-
-// ---------- Theme toggle ----------
-const themeBtn = qs('#themeToggle');
-const storedTheme = localStorage.getItem('theme');
-if (storedTheme) document.body.className = storedTheme;
-function setThemeIcon(){
-  const t = document.body.classList.contains('light') ? 'light' : 'dark';
-  themeBtn.innerHTML = `<i class='bx ${t==='light'?'bx-moon':'bx-sun'}'></i>`;
-}
-themeBtn.addEventListener('click', ()=>{
-  document.body.classList.toggle('light');
-  const t = document.body.classList.contains('light') ? 'light' : 'dark';
-  localStorage.setItem('theme', t);
-  setThemeIcon();
-});
-setThemeIcon();
-
-// ---------- Opening counters (animate on view) ----------
-const countersCfg = [
-  {el:'#c1', to: 5000},
-  {el:'#c2', to: 25},
-  {el:'#c3', to: 890}
-];
-const countersIO = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      countersCfg.forEach(({el,to})=> animateCount(qs(el), to, 1500));
-      countersIO.disconnect();
-    }
-  });
-}, {threshold:.3});
-const countersRoot = qs('.counters');
-if (countersRoot) countersIO.observe(countersRoot);
-
-function animateCount(el, to, dur=1200){
-  if (!el) return;
-  const start = performance.now();
-  const from = 0;
-  const step = (now)=>{
-    const p = clamp((now-start)/dur, 0, 1);
-    el.textContent = Math.round(from + (to-from)*p);
-    if(p<1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
-}
-
-// ---------- Mobile menu ----------
-const openMobile = qs('#openMobile'),
-      closeMobile = qs('#closeMobile'),
-      mobileMenu = qs('#mobileMenu'),
-      mReserve    = qs('#mReserve');
-
-openMobile?.addEventListener('click', ()=> mobileMenu.style.display='block');
-closeMobile?.addEventListener('click', ()=> mobileMenu.style.display='none');
-qsa('.m-link').forEach(a=> a.addEventListener('click', ()=> mobileMenu.style.display='none'));
-mReserve?.addEventListener('click', ()=> { mobileMenu.style.display='none'; openReserveModal(); });
-
-// ---------- Hero slider ----------
-const slides = qs('#slides');
-let idx = 0; const totalSlides = slides ? qsa('.slide', slides).length : 0;
-function go(i){
-  if(!slides) return;
-  idx = (i + totalSlides) % totalSlides;
-  slides.style.transform = `translateX(${-idx*100}%)`;
-}
-qs('#prev')?.addEventListener('click', ()=> go(idx-1));
-qs('#next')?.addEventListener('click', ()=> go(idx+1));
-if (totalSlides) setInterval(()=> go(idx+1), 4500);
-
-// ---------- Menu data ----------
-const DISHES = [
-  {id:'p1',  name:'Paneer Tikka',          price:260, cat:'veg',     tags:['spicy','grill'],     img:'https://images.unsplash.com/photo-1627308595183-4cf5c08df96a?q=80&w=1200&auto=format&fit=crop', pop:92},
-  {id:'p2',  name:'Veg Biryani',           price:220, cat:'veg',     tags:['rice','aromatic'],   img:'https://images.unsplash.com/photo-1604908177520-472c0bdb7b3c?q=80&w=1200&auto=format&fit=crop', pop:88},
-  {id:'p3',  name:'Butter Chicken',        price:320, cat:'nonveg',  tags:['creamy','north'],    img:'https://images.unsplash.com/photo-1631515243404-29a9c6a4f207?q=80&w=1200&auto=format&fit=crop', pop:96},
-  {id:'p4',  name:'Tandoori Chicken',      price:340, cat:'nonveg',  tags:['smoky','grill'],     img:'https://images.unsplash.com/photo-1597809253955-5a6c0d4ebf25?q=80&w=1200&auto=format&fit=crop', pop:91},
-  {id:'p5',  name:'Margherita Pizza',      price:280, cat:'veg',     tags:['italian','cheesy'],  img:'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1200&auto=format&fit=crop', pop:90},
-  {id:'p6',  name:'Pepperoni Pizza',       price:320, cat:'nonveg',  tags:['italian'],           img:'https://images.unsplash.com/photo-1548365318-35d4d7c9a3fd?q=80&w=1200&auto=format&fit=crop', pop:89},
-  {id:'p7',  name:'Chocolate Lava Cake',   price:160, cat:'dessert', tags:['hot','gooey'],       img:'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?q=80&w=1200&auto=format&fit=crop', pop:85},
-  {id:'p8',  name:'Gulab Jamun',           price:120, cat:'dessert', tags:['classic'],           img:'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=1200&auto=format&fit=crop', pop:82},
-  {id:'p9',  name:'Mango Lassi',           price:120, cat:'drinks',  tags:['cool'],              img:'https://images.unsplash.com/photo-1560448075-bb4caa6c64c4?q=80&w=1200&auto=format&fit=crop', pop:80},
-  {id:'p10', name:'Cold Coffee',           price:150, cat:'drinks',  tags:['iced'],              img:'https://images.unsplash.com/photo-1517705008128-361805f42e86?q=80&w=1200&auto=format&fit=crop', pop:83},
-  {id:'p11', name:'Ashwani Special Burger',price:260, cat:'special', tags:['signature'],         img:'https://images.unsplash.com/photo-1606755962773-d324d20ad92a?q=80&w=1200&auto=format&fit=crop', pop:99},
-  {id:'p12', name:'Royal Biryani XL',      price:380, cat:'special', tags:['chef'],              img:'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop', pop:94},
-];
-
-let VISIBLE = 8; // pagination window
-
-const menuGrid = qs('#menuGrid');
-
-function cardTpl(d){
-  return `<div class="card ${d.cat}" data-id="${d.id}">
-    <div class="img">
-      <img src="${d.img}" alt="${d.name}">
-      <span class="badge tag"><i class='bx ${d.cat==='veg'?'bx-leaf':d.cat==='dessert'?'bx-cookie':d.cat==='drinks'?'bx-drink':d.cat==='special'?'bx-star':'bx-bone'}'></i> ${d.cat}</span>
-    </div>
-    <div class="body">
-      <div class="title"><h3>${d.name}</h3><div class="price">${fmt(d.price)}</div></div>
-      <div class="tags">${d.tags.map(t=>`<span class='tag'>#${t}</span>`).join('')}</div>
-      <div class="actions">
-        <button class="btn soft" onclick="quickView('${d.id}')"><i class='bx bx-show'></i> View</button>
-        <button class="btn accent add-btn" data-id="${d.id}"><i class='bx bx-plus'></i> Add</button>
-      </div>
-    </div>
-  </div>`;
-}
-
-function renderMenu(){
-  const q = qs('#search').value.toLowerCase();
-  const activeCat = document.querySelector('.pill.active')?.dataset.cat || 'all';
-  const sort = qs('#sort').value;
-
-  let arr = DISHES.filter(d => {
-    const inCat = activeCat==='all' || d.cat===activeCat;
-    const inSearch = !q || d.name.toLowerCase().includes(q) || d.tags.some(t=>t.includes(q));
-    return inCat && inSearch;
-  });
-
-  switch(sort){
-    case 'lh': arr.sort((a,b)=> a.price-b.price); break;
-    case 'hl': arr.sort((a,b)=> b.price-a.price); break;
-    case 'az': arr.sort((a,b)=> a.name.localeCompare(b.name)); break;
-    case 'za': arr.sort((a,b)=> b.name.localeCompare(a.name)); break;
-    default:   arr.sort((a,b)=> b.pop-a.pop);
-  }
-
-  const shown = arr.slice(0, VISIBLE);
-  menuGrid.innerHTML = shown.map(cardTpl).join('');
-  qs('#loadMore').style.display = arr.length>VISIBLE? 'inline-flex':'none';
-  qsa('.add-btn').forEach(btn=> btn.addEventListener('click', ()=> addToCart(btn.dataset.id)));
-
-  // animate newly rendered cards
-  prepAnimate(qsa('.card', menuGrid));
-}
-
-// category pills
-qsa('#categoryPills .pill').forEach((p,i)=>{
-  if(i===0) p.classList.add('active');
-  p.addEventListener('click', ()=>{
-    qsa('#categoryPills .pill').forEach(x=>x.classList.remove('active'));
-    p.classList.add('active'); VISIBLE=8; renderMenu();
-  });
-});
-
-// toolbar
-qs('#search')?.addEventListener('input', ()=>{ VISIBLE=8; renderMenu(); });
-qs('#sort')?.addEventListener('change', renderMenu);
-qs('#loadMore')?.addEventListener('click', ()=>{ VISIBLE+=6; renderMenu(); });
-
-// initial render
-renderMenu();
-
-// ---------- Quick View ----------
-window.quickView = function(id){
-  const d = DISHES.find(x=>x.id===id); if(!d) return;
-  toast(`<b>${d.name}</b><br>${d.tags.map(t=>`<span class='tag'>#${t}</span>`).join(' ')} — <b>${fmt(d.price)}</b>`, 'warn', 2800);
-};
-
-// ---------- CART ----------
-const openCart    = qs('#openCart');
-const cartDrawer  = qs('#cartDrawer');
-const cartList    = qs('#cartList');
-const cartCount   = qs('#cartCount');
-const grandTotal  = qs('#grandTotal');
-const closeCart   = qs('#closeCart');
-const clearCart   = qs('#clearCart');
-const checkoutBtn = qs('#checkoutBtn');
-
-let CART = JSON.parse(localStorage.getItem('CART')||'[]');
-
-function saveCart(){ localStorage.setItem('CART', JSON.stringify(CART)); }
-function cartQty(){ return CART.reduce((a,c)=>a+c.qty,0); }
-function cartSum(){ return CART.reduce((a,c)=>a+c.qty*c.price,0); }
-
-function cartItemTpl(ci){
-  return `<div class='cart-item'>
-    <img src='${ci.img}' alt='${ci.name}'>
-    <div>
-      <b>${ci.name}</b>
-      <div class='sub'>${fmt(ci.price)} • ${ci.cat}</div>
-      <div class='qty' style='margin-top:6px'>
-        <button class='minus' data-id='${ci.id}'>-</button>
-        <b>${ci.qty}</b>
-        <button class='plus' data-id='${ci.id}'>+</button>
-      </div>
-    </div>
-    <div style='display:grid;gap:6px;justify-items:end'>
-      <b>${fmt(ci.qty*ci.price)}</b>
-      <button class='rm btn soft' data-id='${ci.id}'><i class='bx bx-trash'></i></button>
-    </div>
-  </div>`;
-}
-
-function drawCart(){
-  cartCount.textContent = cartQty();
-  grandTotal.textContent = fmt(cartSum());
-  cartList.innerHTML = CART.length
-    ? CART.map(ci=>cartItemTpl(ci)).join('')
-    : `<p class='sub'>Your cart is empty. Add something yummy 🍔</p>`;
-  qsa('.qty .minus', cartList).forEach(btn=>btn.addEventListener('click', ()=> changeQty(btn.dataset.id, -1)));
-  qsa('.qty .plus', cartList).forEach(btn=>btn.addEventListener('click', ()=> changeQty(btn.dataset.id, 1)));
-  qsa('.rm', cartList).forEach(btn=>btn.addEventListener('click', ()=> removeItem(btn.dataset.id)));
-}
-
-function addToCart(id){
-  const d = DISHES.find(x=>x.id===id); if(!d) return;
-  const ex = CART.find(x=>x.id===id);
-  if(ex) ex.qty++;
-  else CART.push({id:d.id, name:d.name, price:d.price, img:d.img, cat:d.cat, qty:1});
-  saveCart(); drawCart(); toast(`<b>${d.name}</b> added to cart.`, 'ok');
-}
-
-function changeQty(id, delta){
-  const it = CART.find(x=>x.id===id); if(!it) return;
-  it.qty = clamp(it.qty + delta, 0, 99);
-  if(it.qty===0) CART = CART.filter(x=>x.id!==id);
-  saveCart(); drawCart();
-}
-function removeItem(id){ CART = CART.filter(x=>x.id!==id); saveCart(); drawCart(); }
-
-openCart?.addEventListener('click', ()=>{ cartDrawer.style.display='block'; drawCart(); });
-closeCart?.addEventListener('click', ()=> cartDrawer.style.display='none');
-cartDrawer?.addEventListener('click', (e)=>{ if(e.target===cartDrawer) cartDrawer.style.display='none'; });
-clearCart?.addEventListener('click', ()=>{ CART=[]; saveCart(); drawCart(); });
-
-// ---------- Checkout ----------
-const checkoutModal = qs('#checkoutModal');
-const checkoutClose = qs('#checkoutClose');
-
-checkoutBtn?.addEventListener('click', ()=>{
-  if(!CART.length) return toast('Cart is empty!', 'warn');
-  // reflect grand total inside the form
-  const amt = qs('#checkoutAmount');
-  if (amt) amt.value = fmt(cartSum());
-  checkoutModal.style.display='flex';
-});
-checkoutClose?.addEventListener('click', ()=> checkoutModal.style.display='none');
-qs('#checkoutForm')?.addEventListener('submit', (e)=>{
-  e.preventDefault();
-  toast('Order placed! We\'ll call you shortly. ❤️', 'ok', 3000);
-  CART=[]; saveCart(); drawCart();
-  checkoutModal.style.display='none'; cartDrawer.style.display='none';
-});
-
-// ---------- Reservation ----------
-const reserveModal = qs('#reserveModal');
-const reserveClose = qs('#reserveClose');
-const openReserve  = qs('#openReserve');
-const heroReserve  = qs('#heroReserve');
-
-function openReserveModal(){ reserveModal.style.display='flex'; }
-openReserve?.addEventListener('click', openReserveModal);
-heroReserve?.addEventListener('click', openReserveModal);
-reserveClose?.addEventListener('click', ()=> reserveModal.style.display='none');
-reserveModal?.addEventListener('click', (e)=>{ if(e.target===reserveModal) reserveModal.style.display='none'; });
-
-qs('#reserveForm')?.addEventListener('submit', (e)=>{
-  e.preventDefault();
-  const fd = new FormData(e.target);
-  const data = Object.fromEntries(fd.entries());
-  const when = new Date(`${data.date}T${data.time}`);
-  if(isNaN(+when) || when < new Date()) return toast('Please choose a future date/time.', 'warn');
-  localStorage.setItem('lastReservation', JSON.stringify(data));
-  toast('Reservation received! We\'ll confirm by phone.', 'ok', 3000);
-  reserveModal.style.display='none';
-});
-
-// Pre-fill reservation if saved
-(function prefillReservation(){
-  try{
-    const last = JSON.parse(localStorage.getItem('lastReservation')||'null');
-    if(!last) return;
-    const f = qs('#reserveForm'); if(!f) return;
-    ['name','phone','date','time','guests','occasion','note'].forEach(k=>{
-      if(f[k] && last[k]) f[k].value = last[k];
+    const menuContainer=document.getElementById("menuContainer");
+    menuItems.forEach(item=>{
+      const card=document.createElement("div");
+      card.className="card";
+      card.innerHTML=`
+        <img src="${item.img}" alt="${item.name}">
+        <div class="card-body">
+          <h3>${item.name}</h3>
+          <p>${item.desc}</p>
+          <span>₹${item.price}</span><br><br>
+          <button class="btn" onclick="addToCart(${item.id})">Add to Cart</button>
+        </div>`;
+      menuContainer.appendChild(card);
     });
-  }catch{}
-})();
 
-// ---------- Gallery Lightbox ----------
-const lightbox = qs('#lightbox');
-qsa('.g-img').forEach(el=>{
-  el.addEventListener('click', ()=>{
-    qs('img', lightbox).src = qs('img', el).src;
-    lightbox.style.display='flex';
-  });
-});
-lightbox?.addEventListener('click', ()=> lightbox.style.display='none');
-
-// ---------- FAQ ----------
-qsa('.faq .item').forEach(it=>{
-  qs('.q', it).addEventListener('click', ()=> it.classList.toggle('active'))
-});
-
-// ---------- Contact (demo) ----------
-qs('#contactForm')?.addEventListener('submit', (e)=>{
-  e.preventDefault();
-  toast('Thanks! We\'ll reply soon on WhatsApp / mail.', 'ok');
-  e.target.reset();
-});
-
-// ---------- Newsletter (demo) ----------
-qs('#newsletter')?.addEventListener('submit', (e)=>{
-  e.preventDefault();
-  toast('Subscribed! 🎉', 'ok');
-  e.target.reset();
-});
-qs('#subscribeBtn')?.addEventListener('click', ()=> toast('Hit Subscribe in footer to get offers!', 'warn'));
-
-// ---------- Back to Top ----------
-const backTop = qs('#backTop');
-window.addEventListener('scroll', ()=>{ backTop.style.display = window.scrollY>600?'flex':'none'; });
-backTop?.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
-
-// ---------- Small scroll animations ----------
-const animateIO = new IntersectionObserver(es=>{
-  es.forEach(e=>{
-    if(e.isIntersecting){
-      e.target.style.transform='translateY(0)';
-      e.target.style.opacity=1;
-      animateIO.unobserve(e.target);
+    // CART SYSTEM
+    let cart=[];
+    function toggleCart(){document.getElementById("cartDrawer").classList.toggle("active");}
+    function addToCart(id){
+      const item=menuItems.find(m=>m.id===id);
+      const found=cart.find(c=>c.id===id);
+      if(found){found.qty++;}
+      else{cart.push({...item,qty:1});}
+      renderCart();showToast(item.name+" added!");
     }
-  })
-}, {threshold:.2});
+    function removeFromCart(i){cart.splice(i,1);renderCart();}
+    function renderCart(){
+      const cartItemsEl=document.getElementById("cartItems");cartItemsEl.innerHTML="";let total=0;
+      cart.forEach((c,i)=>{total+=c.price*c.qty;
+        cartItemsEl.innerHTML+=`
+          <div class="cart-item">
+            <span>${c.name} (${c.qty})</span>
+            <span>₹${c.price*c.qty}</span>
+            <button class="btn" style="padding:2px 8px;" onclick="removeFromCart(${i})">X</button>
+          </div>`;
+      });
+      document.getElementById("cartTotal").textContent="₹"+total;
+    }
+    function checkout(){if(cart.length===0){showToast("Cart is empty!");return;}
+      showToast("✅ Order Placed!");cart=[];renderCart();toggleCart();}
 
-function prepAnimate(nodes){
-  nodes.forEach(n=>{
-    n.style.transform = 'translateY(18px)';
-    n.style.opacity = .0;
-    animateIO.observe(n);
-  });
-}
+    // TOAST
+    function showToast(msg){
+      const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);
+      setTimeout(()=>t.remove(),3000);
+    }
 
-// prepare animations for static elements
-prepAnimate(qsa('.section-title, .counter, .review, .g-img, .faq .item, .contact form, .contact .card'));
-prepAnimate(qsa('.card', menuGrid));
-
-// ---------- Keyboard shortcuts & accessibility niceties ----------
-window.addEventListener('keydown', (e)=>{
-  // ESC closes modals/drawer
-  if(e.key === 'Escape'){
-    if(checkoutModal?.style.display==='flex') checkoutModal.style.display='none';
-    if(reserveModal?.style.display==='flex')  reserveModal.style.display='none';
-    if(cartDrawer?.style.display==='block')    cartDrawer.style.display='none';
-    if(mobileMenu?.style.display==='block')    mobileMenu.style.display='none';
-  }
-  // Ctrl/Cmd + K focuses search
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){
-    e.preventDefault();
-    qs('#search')?.focus();
-  }
-});
-
-// ---------- On-load: draw cart badge if items present ----------
-drawCart();
+    // NAV SCROLL EFFECT
+    window.addEventListener("scroll",()=>{
+      document.querySelector("nav").classList.toggle("scrolled",window.scrollY>50);
+    });
   </script>
-  </body>
+</body>
 </html>
